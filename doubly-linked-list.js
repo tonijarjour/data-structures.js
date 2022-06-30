@@ -63,7 +63,7 @@ export default class DoublyLinkedList {
     return this.#size;
   }
 
-  empty() {
+  clear() {
     let currentElement = this.#head;
 
     for (let step = 0; step < this.#size; ++step) {

@@ -10,14 +10,14 @@ export default class Queue {
   size() {
     return this.#list.size();
   }
-  
+
   isEmpty() {
     return this.#list.size() === 0;
   }
 
   peek() {
-    if (this.isEmpty()) throw Error("empty queue")
-    return this.#list.read(0)
+    if (this.isEmpty()) throw Error("empty queue");
+    return this.#list.read(0);
   }
 
   enqueue(value) {
