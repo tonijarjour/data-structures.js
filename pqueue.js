@@ -2,9 +2,9 @@ export default class PQueue {
   #size;
   #list;
 
-  constructor(list = []) {
-    this.#list = list;
-    this.#size = list.length;
+  constructor() {
+    this.#list = [];
+    this.#size = 0;
   }
 
   #bubbleUp() {
