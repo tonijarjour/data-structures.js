@@ -1,6 +1,6 @@
 import SinglyLinkedList from "./singly-linked-list.js";
 
-export default class Stack {
+export default class Queue {
   #list;
 
   constructor() {
@@ -10,23 +10,22 @@ export default class Stack {
   size() {
     return this.#list.size();
   }
-
-  push(value) {
-    this.#list.append(value);
-  }
-
+  
   isEmpty() {
     return this.#list.size() === 0;
   }
 
-  pop() {
-    if (this.isEmpty()) throw Error("empty stack");
-    return this.#list.remove(this.#list.size() - 1);
+  peek() {
+    if (this.isEmpty()) throw Error("empty queue")
+    return this.#list.read(0)
   }
 
-  peek() {
-    if (this.isEmpty()) throw Error("empty stack");
-    return this.#list.read(this.#list.size() - 1);
+  enqueue(value) {
+    this.#list.append(value);
+  }
+
+  dequeue() {
+    this.#list.remove(0);
   }
 
   [Symbol.iterator]() {
