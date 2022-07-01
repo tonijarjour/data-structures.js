@@ -7,8 +7,8 @@ export default class PQueue {
     this.#size = 0;
   }
 
-  #bubbleUp() {
-    let step = this.#size - 1;
+  #bubbleUp(index = this.#size - 1) {
+    let step = index;
     let parent = step % 2 === 0 ? step / 2 - 1 : Math.floor(step / 2);
 
     while (this.#list[parent].priority > this.#list[step].priority) {
@@ -23,8 +23,8 @@ export default class PQueue {
     }
   }
 
-  #bubbleDown() {
-    let step = 0;
+  #bubbleDown(index = 0) {
+    let step = index;
 
     let nextOdd = step * 2 + 1;
     let nextEven = step * 2 + 2;

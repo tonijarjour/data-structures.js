@@ -116,11 +116,12 @@ export default class SinglyLinkedList {
       if (this.#size === 1) this.#head = this.#tail = undefined;
       else this.#head = this.#head.next;
 
+      let held = deleteElement.value;
       deleteElement.value = deleteElement.next = undefined;
 
       --this.#size;
 
-      return;
+      return held;
     }
 
     let previousElement = this.#getListElement(index - 1);

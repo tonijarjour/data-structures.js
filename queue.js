@@ -25,7 +25,7 @@ export default class Queue {
   }
 
   dequeue() {
-    this.#list.remove(0);
+    return this.#list.remove(0);
   }
 
   [Symbol.iterator]() {

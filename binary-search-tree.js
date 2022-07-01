@@ -1,3 +1,5 @@
+import Queue from "./queue.js";
+
 class TreeElement {
   constructor(left, right, value) {
     this.value = value;
@@ -8,11 +10,11 @@ class TreeElement {
 
 export default class BinarySearchTree {
   #size;
-  root;
+  #root;
 
   constructor() {
     this.#size = 0;
-    this.root = undefined;
+    this.#root = undefined;
   }
 
   isEmpty() {
@@ -27,11 +29,11 @@ export default class BinarySearchTree {
     const newTreeElement = new TreeElement(undefined, undefined, value);
 
     if (this.#size === 0) {
-      this.root = newTreeElement;
+      this.#root = newTreeElement;
       return (this.#size = 1);
     }
 
-    let currentElement = this.root;
+    let currentElement = this.#root;
 
     while (true) {
       if (value === currentElement.value) return;
@@ -52,11 +54,11 @@ export default class BinarySearchTree {
 
   #find(value) {
     let returnObject = { remove: null, previous: null, direction: null };
-    if (this.root.value === value) {
-      returnObject.remove = this.root;
+    if (this.#root.value === value) {
+      returnObject.remove = this.#root;
       return returnObject;
     }
-    let currentElement = this.root;
+    let currentElement = this.#root;
     let previousElement;
 
     while (currentElement.left || currentElement.right) {
@@ -92,8 +94,8 @@ export default class BinarySearchTree {
       throw Error("empty tree");
     }
     if (this.#size === 1) {
-      if (this.root.value === value) {
-        this.root = undefined;
+      if (this.#root.value === value) {
+        this.#root = undefined;
         return (this.#size = 0);
       } else {
         throw Error("not found");
@@ -156,5 +158,39 @@ export default class BinarySearchTree {
     }
 
     --this.#size;
+  }
+
+  preOrder(element = this.#root) {
+    console.log(element.value);
+    if (element.left) this.preOrder(element.left);
+    if (element.right) this.preOrder(element.right);
+  }
+
+  inOrder(element = this.#root) {
+    if (element.left) this.inOrder(element.left);
+    console.log(element.value);
+    if (element.right) this.inOrder(element.right);
+  }
+
+  postOrder(element = this.#root) {
+    if (element.left) this.postOrder(element.left);
+    if (element.right) this.postOrder(element.right);
+    console.log(element.value);
+  }
+
+  levelOrder(element = this.#root) {
+    let bfs = new Queue();
+    bfs.enqueue(element);
+
+    let currentElement;
+
+    while (bfs.size() !== 0) {
+      currentElement = bfs.dequeue();
+
+      console.log(currentElement.value);
+
+      if (currentElement.left) bfs.enqueue(currentElement.left);
+      if (currentElement.right) bfs.enqueue(currentElement.right);
+    }
   }
 }
