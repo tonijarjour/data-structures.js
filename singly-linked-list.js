@@ -70,7 +70,7 @@ export default class SinglyLinkedList {
   }
 
   prepend(value) {
-    if (this.isEmpty()) this.append(value);
+    if (this.isEmpty()) return this.append(value);
 
     let movedHead = this.#head;
     this.#head = new ListElement(value, movedHead);
@@ -137,20 +137,9 @@ export default class SinglyLinkedList {
     --this.#size;
   }
 
-  [Symbol.iterator]() {
-    let currentElement = this.#head;
-
-    return {
-      next: () => {
-        if (currentElement) {
-          const currentValue = currentElement.value;
-          currentElement = currentElement.next;
-
-          return { value: currentValue, done: false };
-        } else {
-          return { done: true };
-        }
-      },
-    };
+  *[Symbol.iterator]() {
+    for (let current = this.#head; current; current = current.next) {
+      yield current.value;
+    }
   }
 }

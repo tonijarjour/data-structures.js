@@ -160,41 +160,15 @@ export default class DoublyLinkedList {
     return element.v;
   }
 
-  [Symbol.iterator]() {
-    let currentElement = this.#head;
-
-    return {
-      next: () => {
-        if (currentElement) {
-          const currentValue = currentElement.value;
-          currentElement = currentElement.next;
-
-          return { value: currentValue, done: false };
-        } else {
-          return { done: true };
-        }
-      },
-    };
+  *[Symbol.iterator]() {
+    for (let current = this.#head; current; current = current.next) {
+      yield current.value;
+    }
   }
 
-  reverse() {
-    return {
-      [Symbol.iterator]: () => {
-        let currentElement = this.#tail;
-
-        return {
-          next: () => {
-            if (currentElement) {
-              const currentValue = currentElement.value;
-              currentElement = currentElement.prev;
-
-              return { value: currentValue, done: false };
-            } else {
-              return { done: true };
-            }
-          },
-        };
-      },
-    };
+  *reverse() {
+    for (let current = this.#tail; current; current = current.prev) {
+      yield current.value;
+    }
   }
 }
