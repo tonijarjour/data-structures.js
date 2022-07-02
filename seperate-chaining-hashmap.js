@@ -39,12 +39,12 @@ export default class SeperateChainingHashMap {
     let keyIndex = this.#normalizeHash(hash(key));
 
     if (this.#list[keyIndex]) {
-      return this.#findHelper(keyIndex, key)
+      return this.#findHelper(keyIndex, key);
     }
   }
 
   #findHelper(keyIndex, key) {
-      return this.#list[keyIndex].find((e) => e.key === key);
+    return this.#list[keyIndex].find((e) => e.key === key);
   }
 
   remove(key) {

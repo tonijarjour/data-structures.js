@@ -182,10 +182,8 @@ export default class BinarySearchTree {
     let bfs = new Queue();
     bfs.enqueue(element);
 
-    let currentElement;
-
     while (bfs.size() !== 0) {
-      currentElement = bfs.dequeue();
+      let currentElement = bfs.dequeue();
 
       console.log(currentElement.value);
 
