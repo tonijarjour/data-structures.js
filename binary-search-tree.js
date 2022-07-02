@@ -15,7 +15,6 @@ export default class BinarySearchTree {
 
   constructor() {
     this.#size = 0;
-    this.#root = undefined;
   }
 
   isEmpty() {
