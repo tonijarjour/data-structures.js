@@ -1,10 +1,11 @@
 import Queue from "./queue.js";
 
 class TreeElement {
-  constructor(left, right, value) {
+  left;
+  right;
+
+  constructor(value) {
     this.value = value;
-    this.left = left;
-    this.right = right;
   }
 }
 
@@ -25,8 +26,29 @@ export default class BinarySearchTree {
     return this.#size;
   }
 
+  contains(value, origin = this.#root) {
+    if (!origin) return false;
+
+    let currentElement = origin;
+
+    if (value === currentElement.value) return true;
+
+    while (currentElement.left || currentElement.right) {
+      currentElement =
+        value < currentElement.value
+          ? currentElement.left
+          : currentElement.right;
+
+      if (value === currentElement.value) return true;
+
+      if (!currentElement.left && value < currentElement.value) return false;
+      if (!currentElement.right && value > currentElement.value) return false;
+    }
+    return false;
+  }
+
   add(value) {
-    const newTreeElement = new TreeElement(undefined, undefined, value);
+    const newTreeElement = new TreeElement(value);
 
     if (this.#size === 0) {
       this.#root = newTreeElement;
