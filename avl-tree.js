@@ -2,7 +2,6 @@ class Element {
   value;
   left;
   right;
-  balanceFactor;
   height;
 
   constructor(value) {
@@ -10,6 +9,7 @@ class Element {
     this.height = 0;
   }
 }
+
 export default class AvlTree {
   #root;
   #size;
@@ -18,192 +18,189 @@ export default class AvlTree {
     this.#size = 0;
   }
 
+  contains(value, element = this.#root) {
+    if (this.#size === 0) return false;
+    if (element.value === value) return true;
+
+    let left = element.left ? this.contains(value, element.left) : false;
+    let right = element.right ? this.contains(value, element.right) : false;
+
+    return left || right;
+  }
+
   insert(value) {
     if (!value) return false;
 
-    if (this.#size === 0) {
-      this.#root = new Element(value);
-      this.#root.balanceFactor = 0;
-      return (this.#size = 1);
+    if (!this.contains(value)) {
+      this.#root = this.#insertHelper(value, this.#root);
+      return ++this.#size;
     }
 
-    const newElement = new Element(value);
-    let currentElement = this.#root;
+    return false;
+  }
 
-    while (true) {
-      if (currentElement.value === value) return false;
+  #insertHelper(value, element) {
+    if (!element) return new Element(value);
 
-      if (value < currentElement.value) {
-        if (!currentElement.left) {
-          currentElement.left = newElement;
-          break;
-        } else {
-          currentElement = currentElement.left;
-        }
-      } else if (value > currentElement.value) {
-        if (!currentElement.right) {
-          currentElement.right = newElement;
-          break;
-        } else {
-          currentElement = currentElement.right;
-        }
-      }
-    }
+    if (value < element.value)
+      element.left = this.#insertHelper(value, element.left);
+    if (value > element.value)
+      element.right = this.#insertHelper(value, element.right);
 
-    ++this.#size;
+    return this.#balance(element, this.#update(element));
   }
 
   remove(value) {
     if (!value) return false;
 
-    if (this.#root.value === value) {
-      if (this.#size === 1) {
-        this.#root = undefined;
-        return (this.#size = 0);
-      } else if (!(this.#root.left && this.#root.right)) {
-        this.#root = this.#root.left ? this.#root.left : this.#root.right;
-        return --this.#size;
-      }
+    if (this.contains(value)) {
+      this.#root = this.#removeHelper(value, this.#root);
+      return --this.#size;
     }
 
-    let current = this.#root;
-    let previous;
-
-    while (value < current.value || value > current.value) {
-      previous = current;
-      if (value < current.value) current = current.left;
-      if (value > current.value) current = current.right;
-    }
-
-    let side;
-    if (previous) side = previous.left === current ? -1 : 1;
-
-    // leaf
-    if (!current.left && !current.right) {
-      if (side === -1) {
-        previous.left = undefined;
-      } else if (side === 1) {
-        previous.right = undefined;
-      }
-      current.value = undefined;
-    }
-
-    // one way
-    if (!(current.left && current.right)) {
-      if (side === -1) {
-        if (current.left) {
-          previous.left = current.left;
-        } else {
-          previous.left = current.right;
-        }
-      } else {
-        if (current.left) {
-          previous.right = current.left;
-        } else {
-          previous.right = current.right;
-        }
-      }
-      current.left = current.right = undefined;
-    }
-
-    // full branch
-    if (current.left && current.right) {
-      let replace = current.right;
-      previous = undefined;
-
-      while (replace.left) {
-        previous = replace;
-        replace = replace.left;
-      }
-
-      current.value = replace.value;
-
-      if (!previous) {
-        current.right = replace.right;
-      } else {
-        previous.left = replace.right;
-      }
-
-      replace.right = replace.value = undefined;
-    }
-    --this.#size;
+    return false;
   }
 
-  balance() {}
+  #removeHelper(value, element) {
+    if (!element) return;
 
-  update() {}
+    if (value < element.value)
+      element.left = this.#removeHelper(value, element.left);
+    else if (value > element.value)
+      element.right = this.#removeHelper(value, element.right);
+    else {
+      if (!element.left) return element.right;
+      else if (!element.right) return element.left;
+      else {
+        // full branch
+        if (element.left.height > element.right.height) {
+          let replace = element.left;
+          while (replace.right) replace = replace.right;
 
-  rotateLeft(element) {
-    right = element.right;
-    element.right = right.left;
-    right.left = element;
-    return right;
+          element.value = replace.value;
+
+          element.left = this.#removeHelper(replace.value, element.left);
+        } else {
+          let replace = element.right;
+          while (replace.left) replace = replace.left;
+
+          element.value = replace.value;
+
+          element.right = this.#removeHelper(replace.value, element.right);
+        }
+      }
+    }
+
+    return this.#balance(element, this.#update(element));
   }
 
-  rotateRight(element) {
-    left = element.left;
+  #update(element) {
+    let lh = -1;
+    let rh = -1;
+
+    if (element.left) lh = element.left.height;
+    if (element.right) rh = element.right.height;
+
+    element.height = 1 + Math.max(lh, rh);
+
+    return rh - lh;
+  }
+
+  #balance(element, bf) {
+    if (bf === -2) {
+      if (element.left.left) {
+        return this.#leftLeftRotate(element);
+      } else {
+        return this.#leftRightRotate(element);
+      }
+    }
+    if (bf === 2) {
+      if (element.right.right) {
+        return this.#rightRightRotate(element);
+      } else {
+        return this.#rightLeftRotate(element);
+      }
+    }
+    return element;
+  }
+
+  #rightRotate(element) {
+    let left = element.left;
     element.left = left.right;
     left.right = element;
+
+    this.#update(element);
+    this.#update(left);
+
     return left;
   }
 
-  leftleft(element) {
-    return this.rotateRight(element);
+  #leftRotate(element) {
+    let right = element.right;
+    element.right = right.left;
+    right.left = element;
+
+    this.#update(element);
+    this.#update(right);
+
+    return right;
   }
 
-  leftright(element) {
-    return this.rotateRight(this.rotateLeft(element));
+  #leftLeftRotate(element) {
+    return this.#rightRotate(element);
   }
 
-  rightright(element) {
-    return this.rotateLeft(element);
+  #leftRightRotate(element) {
+    element.left = this.#leftRotate(element.left);
+    return rightRotate(element);
   }
 
-  rightleft(element) {
-    return this.rotateLeft(this.rotateRight(element));
+  #rightRightRotate(element) {
+    return this.#leftRotate(element);
+  }
+
+  #rightLeftRotate(element) {
+    element.right = rightRotate(element.right);
+    return this.#leftRotate(element);
   }
 
   preOrder(element = this.#root) {
-    console.log(element.value);
+    process.stdout.write("" + element.value + " ");
     if (element.left) this.preOrder(element.left);
     if (element.right) this.preOrder(element.right);
   }
 
   inOrder(element = this.#root) {
     if (element.left) this.inOrder(element.left);
-    console.log(element.value);
+    process.stdout.write("" + element.value + " ");
     if (element.right) this.inOrder(element.right);
   }
 
   postOrder(element = this.#root) {
     if (element.left) this.postOrder(element.left);
     if (element.right) this.postOrder(element.right);
-    console.log(element.value);
+    process.stdout.write("" + element.value + " ");
   }
 
   levelOrder(element = this.#root) {
+    let level = 1;
+    let step = 0;
     let queue = [];
     queue.push(element);
 
     while (queue.length !== 0) {
-      let currentElement = queue.shift();
+      let current = queue.shift();
 
-      console.log(currentElement.value);
+      ++step;
+      if (step === level) {
+        console.log();
+        level *= 2;
+      }
 
-      if (currentElement.left) queue.push(currentElement.left);
-      if (currentElement.right) queue.push(currentElement.right);
+      process.stdout.write("" + current.value + " ");
+
+      if (current.left) queue.push(current.left);
+      if (current.right) queue.push(current.right);
     }
   }
 }
-
-let tree = new AvlTree();
-
-tree.insert(500);
-tree.insert(400);
-tree.insert(600);
-tree.insert(350);
-tree.insert(450);
-tree.insert(550);
-tree.insert(650);
-
-tree.levelOrder();

@@ -167,3 +167,4 @@ export default class BinarySearchTree {
       if (currentElement.right) bfs.enqueue(currentElement.right);
     }
   }
+}
