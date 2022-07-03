@@ -1,28 +1,21 @@
-import Queue from "./queue.js";
-
 class Element {
+  value;
   left;
   right;
+  balanceFactor;
+  height;
 
   constructor(value) {
     this.value = value;
+    this.height = 0;
   }
 }
-
-export default class BinarySearchTree {
-  #size;
+export default class AvlTree {
   #root;
+  #size;
 
   constructor() {
     this.#size = 0;
-  }
-
-  isEmpty() {
-    return this.#size === 0;
-  }
-
-  size() {
-    return this.#size;
   }
 
   insert(value) {
@@ -136,6 +129,40 @@ export default class BinarySearchTree {
     --this.#size;
   }
 
+  balance() {}
+
+  update() {}
+
+  rotateLeft(element) {
+    right = element.right;
+    element.right = right.left;
+    right.left = element;
+    return right;
+  }
+
+  rotateRight(element) {
+    left = element.left;
+    element.left = left.right;
+    left.right = element;
+    return left;
+  }
+
+  leftleft(element) {
+    return this.rotateRight(element);
+  }
+
+  leftright(element) {
+    return this.rotateRight(this.rotateLeft(element));
+  }
+
+  rightright(element) {
+    return this.rotateLeft(element);
+  }
+
+  rightleft(element) {
+    return this.rotateLeft(this.rotateRight(element));
+  }
+
   preOrder(element = this.#root) {
     console.log(element.value);
     if (element.left) this.preOrder(element.left);
@@ -155,15 +182,28 @@ export default class BinarySearchTree {
   }
 
   levelOrder(element = this.#root) {
-    let bfs = new Queue();
-    bfs.enqueue(element);
+    let queue = [];
+    queue.push(element);
 
-    while (bfs.size() !== 0) {
-      let currentElement = bfs.dequeue();
+    while (queue.length !== 0) {
+      let currentElement = queue.shift();
 
       console.log(currentElement.value);
 
-      if (currentElement.left) bfs.enqueue(currentElement.left);
-      if (currentElement.right) bfs.enqueue(currentElement.right);
+      if (currentElement.left) queue.push(currentElement.left);
+      if (currentElement.right) queue.push(currentElement.right);
     }
   }
+}
+
+let tree = new AvlTree();
+
+tree.insert(500);
+tree.insert(400);
+tree.insert(600);
+tree.insert(350);
+tree.insert(450);
+tree.insert(550);
+tree.insert(650);
+
+tree.levelOrder();
