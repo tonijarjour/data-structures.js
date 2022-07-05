@@ -11,6 +11,9 @@ export default class PQueue {
     let step = index;
     let parent = step % 2 === 0 ? step / 2 - 1 : Math.floor(step / 2);
 
+    if (this.#list[parent].priority <= this.#list[step].priority)
+      return false;
+
     while (this.#list[parent].priority > this.#list[step].priority) {
       let held = this.#list[parent];
       this.#list[parent] = this.#list[step];
@@ -21,6 +24,7 @@ export default class PQueue {
       step = parent;
       parent = step % 2 === 0 ? step / 2 - 1 : Math.floor(step / 2);
     }
+    return true;
   }
 
   #bubbleDown(index = 0) {
@@ -98,6 +102,25 @@ export default class PQueue {
     this.#list[0] = this.#list[this.#size];
     this.#list.pop();
     if (this.#size > 1) this.#bubbleDown();
+  }
+
+  remove(value) {
+    if (this.#size === 0) throw Error("empty queue");
+    if (!value) return false;
+
+    for (let e = 0; e < this.#size; ++e) {
+      if (value === this.#list[e].value) {
+        --this.#size;
+        if (e === this.#size) return this.#list.pop()
+        this.#list[e] = this.#list[this.#size]
+        this.#list.pop()
+        if (this.#size > 1) {
+          if (!this.#bubbleUp(e)) this.#bubbleDown(e)
+        }
+        return value;
+      }
+    }
+    return false;
   }
 
   peek() {
