@@ -4,6 +4,7 @@ export default class IndexedPQueue {
   #positions;
   #keys;
   #values;
+  #size;
 
   constructor() {
     this.#keys = [];
@@ -11,14 +12,15 @@ export default class IndexedPQueue {
     this.#values = [];
     this.#child = [1];
     this.#parent = [0];
+    this.#size = 0;
   }
 
   size() {
-    return this.#values.length;
+    return this.#size;
   }
 
   isEmpty() {
-    return this.#values.length === 0;
+    return this.#size === 0;
   }
 
   contains(ki) {
@@ -44,24 +46,31 @@ export default class IndexedPQueue {
     this.#child.push(this.#child.length * 2 + 1);
 
     this.#keys.push(ki);
-    this.#positions[ki] = this.size();
+    this.#positions[ki] = this.#size;
     this.#values[ki] = value;
 
-    this.#bubbleUp(this.size() - 1);
+    ++this.#size;
+
+    this.#bubbleUp(this.#size - 1);
   }
 
   remove(ki) {
     const index = this.#positions[ki];
 
-    this.#swap(index, this.size() - 1);
+    this.#swap(index, this.#size - 1);
+
+    this.#positions[ki] = undefined;
+    this.#keys.splice(this.#size - 1, 1);
+
+    --this.#size;
 
     this.#bubbleDown(index);
     this.#bubbleUp(index);
 
-    this.#positions.splice(ki, 1);
-    this.#keys.splice(this.size() - 1, 1);
+    let val = this.#values[ki];
+    this.#values[ki] = undefined;
 
-    return this.#values.splice(ki, 1)[0];
+    return val;
   }
 
   update(ki, value) {
@@ -91,7 +100,7 @@ export default class IndexedPQueue {
       let current = this.#keys[i];
       let parent = this.#keys[this.#parent[i]];
 
-      if (current >= parent) return;
+      if (!parent || current >= parent) return;
 
       this.#swap(i, this.#parent[i]);
       i = this.#parent[i];
@@ -107,7 +116,7 @@ export default class IndexedPQueue {
 
       if (!child || current <= child) return;
 
-      this.#swap(i, this.#child[childIndex]);
+      this.#swap(i, childIndex);
       i = childIndex;
     }
   }
