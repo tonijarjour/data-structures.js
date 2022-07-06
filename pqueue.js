@@ -11,8 +11,7 @@ export default class PQueue {
     let step = index;
     let parent = step % 2 === 0 ? step / 2 - 1 : Math.floor(step / 2);
 
-    if (this.#list[parent].priority <= this.#list[step].priority)
-      return false;
+    if (this.#list[parent].priority <= this.#list[step].priority) return false;
 
     while (this.#list[parent].priority > this.#list[step].priority) {
       let held = this.#list[parent];
@@ -111,11 +110,11 @@ export default class PQueue {
     for (let e = 0; e < this.#size; ++e) {
       if (value === this.#list[e].value) {
         --this.#size;
-        if (e === this.#size) return this.#list.pop()
-        this.#list[e] = this.#list[this.#size]
-        this.#list.pop()
+        if (e === this.#size) return this.#list.pop();
+        this.#list[e] = this.#list[this.#size];
+        this.#list.pop();
         if (this.#size > 1) {
-          if (!this.#bubbleUp(e)) this.#bubbleDown(e)
+          if (!this.#bubbleUp(e)) this.#bubbleDown(e);
         }
         return value;
       }

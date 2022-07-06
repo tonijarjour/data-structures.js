@@ -62,8 +62,6 @@ export default class AvlTree {
   }
 
   #removeHelper(value, element) {
-    if (!element) return;
-
     if (value < element.value)
       element.left = this.#removeHelper(value, element.left);
     else if (value > element.value)
