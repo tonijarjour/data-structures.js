@@ -163,21 +163,21 @@ export default class AvlTree {
   }
 
   preOrder(element = this.#root) {
-    process.stdout.write("" + element.value + " ");
+    process.stdout.write(`${element.value} `);
     if (element.left) this.preOrder(element.left);
     if (element.right) this.preOrder(element.right);
   }
 
   inOrder(element = this.#root) {
     if (element.left) this.inOrder(element.left);
-    process.stdout.write("" + element.value + " ");
+    process.stdout.write(`${element.value} `);
     if (element.right) this.inOrder(element.right);
   }
 
   postOrder(element = this.#root) {
     if (element.left) this.postOrder(element.left);
     if (element.right) this.postOrder(element.right);
-    process.stdout.write("" + element.value + " ");
+    process.stdout.write(`${element.value} `);
   }
 
   levelOrder(element = this.#root) {
@@ -195,7 +195,7 @@ export default class AvlTree {
         level *= 2;
       }
 
-      process.stdout.write("" + current.value + " ");
+      process.stdout.write(`${current.value} `);
 
       if (current.left) queue.push(current.left);
       if (current.right) queue.push(current.right);

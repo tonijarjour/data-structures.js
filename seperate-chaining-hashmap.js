@@ -32,7 +32,7 @@ export default class SeperateChainingHashMap {
   }
 
   #normalizeHash(hash) {
-    return hash % this.#capacity;
+    return (hash & 0x7fffffff) % this.#capacity;
   }
 
   find(key) {
